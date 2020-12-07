@@ -1,0 +1,345 @@
+<div class="wrapper">
+  <app-topnavbar></app-topnavbar>
+  <app-asidenavbar></app-asidenavbar>
+  <div class="content-wrapper">
+
+    <button class="btn btn-primary"
+            (click)="divData =! divData; heading='Add New'; edit=false; title=''; description=''">
+      New
+    </button>
+    <div *ngIf="divData">
+      <h1>{{heading}}</h1>
+      <!--start : add news-->
+      <div>
+        <!--      Title-->
+        <div class="col-md-12 offset-md-12">
+          <div class="form-group">
+            <label>Title : </label>
+            <input [(ngModel)]="title" type="text" class="form-control" placeholder="1024 Character Max..">
+          </div>
+        </div>
+
+        <!-- description -->
+        <div class="col-md-12 offset-md-12">
+          <div class="form-group">
+            <label>Description : </label>
+            <ckeditor [(ngModel)]="description" data="<p>Hello, world!</p>"></ckeditor>
+          </div>
+        </div>
+
+        <!-- notes -->
+        <div class="col-md-12 offset-md-12">
+          <div class="form-group">
+            <label>Notes : </label>
+            <input [(ngModel)]="notes" type="text" class="form-control" placeholder="1024 Character Max..">
+          </div>
+        </div>
+
+        <button *ngIf="!edit" class="btn btn-primary" (click)="save_news()">Save</button>
+
+        <button *ngIf="edit" class="btn btn-info" (click)="update()">Update</button>
+        <button *ngIf="edit" class="btn btn-primary" (click)="edit=false; divData =!divData;">Cancel</button>
+
+        <button class="btn btn-danger" data-toggle="modal" data-target="#news_preview">Preview</button>
+        <br>
+        <button *ngIf="dataSaveSucess" class="btn btn-info">
+          {{message}}
+        </button>
+      </div>
+      <!--end : add news-->
+    </div>
+
+
+    <!--start : showing all news-->
+    <div id="all_news" class="tabcontent ">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="active_search" value="" id="defaultCheck1">
+        <label class="form-check-label" for="defaultCheck1">
+          Active Search
+        </label>
+      </div>
+      <h1>All News</h1>
+      <!--start : search fields and search key or search value -->
+      <h4>
+        <button class="btn btn-info" (click)="setNewsCount()">Search</button>
+        <button class="btn btn-xs btn-primary" (click)="refreshTable_news()">Refresh</button>
+      </h4>
+      <!-- sort by column name -->
+      <div class="col-md-12 offset-md-12">
+        <div class="form-group">
+          <h4>Search By :</h4>
+          <select [(ngModel)]="news_search_by">
+            <option value="post_date">Post Date</option>
+            <option value="title">Title</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-12 offset-md-12">
+        <div class="form-group">
+          <label>Value : </label>
+          <input [(ngModel)]="news_value_search" type="text" class="form-control" placeholder="search...">
+        </div>
+      </div>
+      <!-- end : search fields selection and search key or search value-->
+
+      <!-- Start : showing all profiles after search -->
+      <!-- start : All news pagination panel-->
+      <!-- perPage-->
+      <div class="col-md-2 offset-md-2">
+        <div style="text-align: center" class="form-group">
+          <label>Per Page</label>
+          <input style="text-align: center" [(ngModel)]="newsSearch_perPage" type="number" class="form-control"
+                 value="{{newsSearch_perPage}}" (ngModelChange)="refreshTable_news()">
+        </div>
+      </div>
+      <!-- total-->
+      <div class="col-md-2 offset-md-2">
+        <div style="text-align: center" class="form-group">
+          <label>Total </label>
+          <input style="text-align: center" disabled="true" [(ngModel)]="newsSearch_total" type="number"
+                 class="form-control"
+                 value="{{newsSearch_total}}">
+        </div>
+      </div>
+      <!-- prePage/nextPage-->
+      <div class="col-md-3 offset-md-3">
+        <div class="form-group" style="text-align: center">
+          <button class="btn btn-primary btn-xs" (click)="newsSearch_previousPage()">Previous</button>
+          <label class="btn btn-danger btn-xs ">Page Number</label>
+          <button class="btn btn-primary btn-xs" (click)="newsSearch_nextPage()">Next</button>
+          <input style="text-align: center" [(ngModel)]="newsSearch_pageNumber" type="number" class="form-control"
+                 value="{{newsSearch_pageNumber}}">
+        </div>
+      </div>
+      <!-- sort by ASC or DESC -->
+      <div class="col-md-3 offset-md-3">
+        <div class="form-group" style="text-align: center">
+          <h4>Sort Order</h4>
+          <input type="radio" name="m_pay" [(ngModel)]="newsSearch_sort_by" value="ASC"
+                 checked="checked">Ascending<br>
+          <input type="radio" name="m_pay" [(ngModel)]="newsSearch_sort_by" value="DESC">Descending<br>
+        </div>
+      </div>
+      <!--  sort by column name -->
+      <div>
+        <h4>Sort By</h4>
+        <select [(ngModel)]="newsSearch_sort_on">
+          <option value="id">Id</option>
+          <option value="post_date">Post Date</option>
+        </select>
+      </div>
+      <!--end : All news pagination panel-->
+
+      <!-- start : table News-->
+      <!-- also used for to show news details, Edit News. -->
+      <div class="col-xs-12">
+        <div class="box">
+          <div class="box-body table-responsive no-padding">
+            <table class="table table-hover">
+              <tbody>
+              <tr>
+                <th>Delete</th>
+                <th>Details</th>
+                <th>Edit</th>
+                <th>Index</th>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Post Date</th>
+              </tr>
+
+              <!-- showing all profiles after basic search  -->
+              <tr *ngFor="let news of news_array; let i=index">
+                <td>
+                  <button class="btn btn-xs btn-danger" data-toggle="modal" data-target="#delete_confirmation"
+                          (click)="delete_id = news.id"
+                  >
+                    Delete
+                  </button>
+                </td>
+                <td>
+                  <button button class="btn btn-xs btn-primary"
+                          (click)=" heading='Update'; edit=true; divData =!divData;  editClick(news.id)">
+                    Edit
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-xs btn-info" data-toggle="modal" data-target="#news_details"
+                          (click)="newsDetails(news.id)"
+                  >
+                    Details
+                  </button>
+                </td>
+                <td>{{i + 1}}</td>
+                <td>{{news.id}}</td>
+                <td>{{news.title}}</td>
+                <td>{{news.post_date}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- end : table News-->
+    </div>
+    <!--end : showing all news-->
+
+  </div>
+  <!-- content warpper -->
+  <!--<app-settingsnavbar></app-settingsnavbar>-->
+  <app-footernavbar></app-footernavbar>
+
+
+  <!--start : news preview -->
+  <div class="modal fade" id="news_preview" tabindex="-1" role="dialog" aria-labelledby="modal_educationLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" style="width:1250px;" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal_educationLabel">New Preview</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!--previw-->
+          <h5 style="background-color: cyan">Title :</h5>
+          <h3>{{title}}</h3>
+          <h5 style="background-color: pink">Details: </h5>
+          <p innerHtml="{{description}}"></p>
+          <h5>Notes: </h5>
+          <P>{{notes}}</P>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">Close</button>
+          <!--no need, test purpose.-->
+          <!--<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Update</button>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- <app-footernavbar></app-footernavbar> -->
+    <!-- <app-settingsnavbar></app-settingsnavbar> -->
+  </div>
+  <!--end : news preview -->
+
+
+  <!--start : news details -->
+  <div class="modal fade" id="news_details" tabindex="-1" role="dialog" aria-labelledby="modal_educationLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" style="width:1250px;" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal_educationLab">News Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!--previw-->
+          <h5 style="background-color: cyan">Title :</h5>
+          <h3>{{details_title}}</h3>
+          <h5 style="background-color: pink">Details: </h5>
+          <p innerHtml="{{details_description}}"></p>
+          <h5 style="background-color: #0b93d5">Notes: </h5>
+          <P>{{details_notes}}</P>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" data-dismiss="modal" aria-label="Close">Close</button>
+          <!--no need, test purpose.-->
+          <!--<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Update</button>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- <app-footernavbar></app-footernavbar> -->
+    <!-- <app-settingsnavbar></app-settingsnavbar> -->
+  </div>
+  <!--end : news details -->
+
+
+  <!--start : delete confirmation-->
+  <div class="modal fade" id="delete_confirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h4>Are U sure to delete?</h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary btn-danger" (click)="delete()" data-dismiss="modal">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- end :  Modal -->
+
+
+    <!-- <app-footernavbar></app-footernavbar> -->
+    <!-- <app-settingsnavbar></app-settingsnavbar> -->
+  </div>
+  <!--end : news confirmation -->
+
+
+</div>
+
+<!--Start OLD Code-->
+
+<!-- start : panel new News -->
+<!--<div class="panel panel-default" (click)="toggleSuccess()">-->
+<!--<div class="panel-heading">-->
+<!--<h4 class="panel-title">-->
+<!--<a [class.aria-expanded]="true" data-toggle="collapse"-->
+<!--href="#news">New News</a>-->
+<!--</h4>-->
+<!--</div>-->
+<!--<div id="news" class="panel-collapse collapse">-->
+<!--<div class="panel-body">-->
+
+<!--&lt;!&ndash;      Title&ndash;&gt;-->
+<!--<div class="col-md-12 offset-md-12">-->
+<!--<div class="form-group">-->
+<!--<label>Title : </label>-->
+<!--<input [(ngModel)]="title" type="text" class="form-control" placeholder="1024 Character Max..">-->
+<!--</div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; description &ndash;&gt;-->
+<!--<div class="col-md-12 offset-md-12">-->
+<!--<div class="form-group">-->
+<!--<label>Description : </label>-->
+<!--<ckeditor [(ngModel)]="description" data="<p>Hello, world!</p>"></ckeditor>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; notes &ndash;&gt;-->
+<!--<div class="col-md-12 offset-md-12">-->
+<!--<div class="form-group">-->
+<!--<label>Notes : </label>-->
+<!--<input [(ngModel)]="notes" type="text" class="form-control" placeholder="1024 Character Max..">-->
+<!--</div>-->
+<!--</div>-->
+
+<!--<button class="btn btn-primary" (click)="save_news()">Save</button>-->
+<!--<button class="btn btn-danger" data-toggle="modal" data-target="#news_preview">Preview</button>-->
+<!--<br>-->
+<!--<button *ngIf="dataSaveSucess" class="btn btn-info">-->
+<!--Data Save Success!-->
+<!--</button>-->
+<!--</div>-->
+<!--&lt;!&ndash; panel body&ndash;&gt;-->
+<!--</div>-->
+<!--<div class="panel-footer">-->
+<!--News-->
+<!--</div>-->
+<!--</div>-->
+<!-- end : panel new News -->

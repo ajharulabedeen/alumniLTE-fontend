@@ -1,0 +1,144 @@
+<div class="wrapper">
+  <app-topnavbar></app-topnavbar>
+  <app-asidenavbar></app-asidenavbar>
+  <div class="content-wrapper">
+
+    <button class="btn btn-info" (click)="register_to_event()" *ngIf="!registered">Register</button>
+    <button class="btn btn-danger" *ngIf="registered">Registered</button>
+
+    <button class="btn btn-primary" data-toggle="modal"
+            data-target="#do_payment" *ngIf="!paymentCheck">Pay
+    </button>
+    <button class="btn btn-danger" data-toggle="modal"
+            data-target="#do_payment" *ngIf="paymentCheck">Pay
+    </button>
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <!--start : event Description-->
+        <div>
+          <table>
+            <tr>
+              <td><h4>Title : </h4></td>
+              <td align="center">{{event.$title}}</td>
+            </tr>
+            <tr>
+              <td align="center"><h4>Start : </h4></td>
+              <td>{{event.$start_date}}</td>
+            </tr>
+            <tr>
+              <td align="center"><h4>End : </h4></td>
+              <td>{{event.$end_date}}</td>
+            </tr>
+            <tr>
+              <td align="center"><h4>Fee : </h4></td>
+              <td>{{event.$fee}}</td>
+            </tr>
+            <tr>
+              <td align="center"><h4>Location : </h4></td>
+              <td>{{event.$location}}</td>
+            </tr>
+          </table>
+          <h4 style="background-color: pink">Description : </h4>
+          <p [innerHTML]="event.$description"></p>
+          <h4>Notes : </h4>
+          <p>{{event.$notes}}</p>
+        </div>
+        <!--end : event Description-->
+      </div>
+      <!-- panel-group -->
+      <!--End :  My Payments -->
+    </div>
+
+
+    <!-- modal-start : do payment-->
+    <div class="modal fade" id="do_payment" tabindex="-1" role="dialog" aria-labelledby="modal_educationLabel"
+         aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal_educationLabel">Pay IT</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <!-- start : payment Form-->
+            <div *ngIf="!paymentCheck">
+              <div class="col-md-6 offset-md-6">
+                <div class="form-group">
+                  <label>Date</label>
+                  <input type="text" class="form-control" placeholder="{{payIt_date}}">
+                </div>
+              </div>
+              <div class="col-md-6 offset-md-6">
+                <div class="form-group">
+                  <label>Select Date</label>
+                  <input [(ngModel)]="payIt_date" type="date" class="form-control">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Amount</label>
+                <input [(ngModel)]="payIt_amount" type="number" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Mobile Number</label>
+                <input [(ngModel)]="payIt_mobile_number" type="text" class="form-control"
+                       placeholder="Mobile Number from Which payment has done ...... (Max : 512 Character)">
+              </div>
+              <div class="form-group">
+                <label>Medium</label>
+                <input [(ngModel)]="payIt_payment_method" type="text" class="form-control"
+                       placeholder="bKash, Rocket...... (Max : 512 Character)">
+              </div>
+              <div class="form-group">
+                <label>TrX ID</label>
+                <input [(ngModel)]="payIt_trx_id" type="text" class="form-control"
+                       placeholder="Transection id...... (Max : 512 Character)">
+              </div>
+            </div>
+
+            <!-- end : payment Form-->
+
+            <!-- start : Payment Mobile Description-->
+            <div *ngIf="paymentCheck">
+              <label for="date">Payment Date:</label>
+              <p id="date">{{this.paymentMobile["date"]}}</p>
+              <h4>Payment Method:</h4>
+              <p>{{this.paymentMobile["payment_method"]}}</p>
+              <h4>Mobile Number:</h4>
+              <p>{{this.paymentMobile.$mobile_number}}</p>
+              <p>{{this.paymentMobile['mobile_number']}}</p>
+              <h4>TrxID:</h4>
+              <p>{{this.paymentMobile["trx_id"]}}</p>
+              <h4>Approvel Status:</h4>
+              <button *ngIf="this.approvalStatus" class="btn btn-primary">
+                Approved
+                <h4>Approve Date:</h4>
+                <p>{{this.paymentMobile["approved_date"]}}</p>
+              </button>
+              <button *ngIf="!this.approvalStatus" class="btn btn-warning">Pending</button>
+
+            </div>
+            <!-- end : Payment Mobile Description-->
+
+          </div>
+          <div class="modal-footer ">
+            <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                    *ngIf="!paymentCheck" (click)="savePayment()">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal-end : do payment-->
+
+  </div>
+  <!--  content-warper-->
+  <!--  <app-settingsnavbar></app-settingsnavbar>-->
+  <app-footernavbar></app-footernavbar>
+</div>
+<!--  warpper-->
