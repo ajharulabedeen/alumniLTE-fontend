@@ -26,7 +26,7 @@ export class AuthService {
       .post<AuthResponseData>(
         'http://127.0.0.1:8000/api/signup',
         {
-          name: "Test Name",
+          name: 'Test Name',
           email: email,
           password: password,
           password_confirmation: password
@@ -36,9 +36,9 @@ export class AuthService {
         // catchError(this.handleError),//not working; problem: unable to distinguish between login and singuperror.
         catchError(errorRes => {
           let errorMessage = 'An unknown error occurred!';
-          if (errorRes.error.errors.email[0].match("The email has already been taken.")) {
+          if (errorRes.error.errors.email[0].match('The email has already been taken.')) {
             errorMessage = 'This email already taken!';
-            console.log("ERR : " + errorRes.error.errors.email[0]);
+            console.log('ERR : ' + errorRes.error.errors.email[0]);
             errorMessage = errorRes.error.errors.email[0];
             return throwError(errorMessage);
           }
@@ -56,19 +56,17 @@ export class AuthService {
 
 
   login(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        'http://127.0.0.1:8000/api/login',
-        {
-          email: email,
-          password: password,
-        }
-      )``
-      .pipe(
+    return this.http.post<AuthResponseData>(
+      'http://127.0.0.1:8000/api/login',
+      {
+        email: email,
+        password: password,
+      }
+    ).pipe(
         // catchError(this.handleError),
         catchError(errorRes => {
           let errorMessage = 'An unknown error occurred!';
-          if (errorRes.error.error.match("Email or Password does not exist.")) {
+          if (errorRes.error.error.match('Email or Password does not exist.')) {
             errorMessage = 'This email already taken!';
             // console.log("ERR : " + errorRes.error.errors.email[0]);
             errorMessage = errorRes.error.error;
@@ -77,28 +75,28 @@ export class AuthService {
           return throwError(errorMessage);
         }),
         tap(resData => {
-          this.token = resData.access_token;
+          this.token = resData['access_token'];
           return this.handleAuthentication(
-            resData.user,
-            resData.token_type,
-            resData.access_token,
-            resData.expires_in);
+            resData['user'],
+            resData['token_type'],
+            resData['access_token'],
+            resData['expires_in']);
         })
       );
-  }//loggin
+  }// loggin
 
-  //not working; problem: unable to distinguish between login and singuperror.
+  // not working; problem: unable to distinguish between login and singuperror.
   private handleError(errorRes: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';
-    if (errorRes.error.error.match("Email or Password does not exist.")) {
+    if (errorRes.error.error.match('Email or Password does not exist.')) {
       errorMessage = 'This email already taken!';
       // console.log("ERR : " + errorRes.error.errors.email[0]);
       errorMessage = errorRes.error.error;
       return throwError(errorMessage);
     }
-    if (errorRes.error.errors.email[0].match("The email has already been taken.")) {
+    if (errorRes.error.errors.email[0].match('The email has already been taken.')) {
       errorMessage = 'This email already taken!';
-      console.log("ERR : " + errorRes.error.errors.email[0]);
+      console.log('ERR : ' + errorRes.error.errors.email[0]);
       errorMessage = errorRes.error.errors.email[0];
       return throwError(errorMessage);
     }
@@ -112,16 +110,16 @@ export class AuthService {
     token: string,
     expiresIn: number
   ) {
-    console.log("New User Created!");
+    console.log('New User Created!');
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, userId, token, expirationDate);
     this.user.next(user);
-    console.log("New User Created : next");
+    console.log('New User Created : next');
   }
 
   public getHeader() {
     var token: string;
-    token = "bearer" + this.getToken();
+    token = 'bearer' + this.getToken();
     let headers = new HttpHeaders({
       // 'Content-Type': 'application/json',
       'Authorization': token
@@ -132,7 +130,7 @@ export class AuthService {
 
   public getHeaderFile() {
     var token: string;
-    token = "bearer" + this.getToken();
+    token = 'bearer' + this.getToken();
     let headers = new HttpHeaders({
       'Authorization': token
     });
@@ -158,7 +156,7 @@ export class AuthService {
   }
 
   public resetPass(resetPass: string) {
-    console.log("resetPass : " + resetPass );
+    console.log('resetPass : ' + resetPass);
     return this.http
       .post(
         'http://127.0.0.1:8000/sendNewPass',

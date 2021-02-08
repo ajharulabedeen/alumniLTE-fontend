@@ -72,7 +72,7 @@ export class NewsPublicComponent implements OnInit {
   }
 
   public setTotal() {
-    var column_name = this.news_search_by;//column name
+    var column_name = this.news_search_by; // column name
     var key = this.news_value_search;
     var pageNumber = this.newsSearch_pageNumber;
     this.newsService.count(column_name, key).subscribe(res => {
