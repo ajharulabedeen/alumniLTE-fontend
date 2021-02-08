@@ -62,8 +62,7 @@ export class AuthService {
         email: email,
         password: password,
       }
-    )``
-      .pipe(
+    ).pipe(
         // catchError(this.handleError),
         catchError(errorRes => {
           let errorMessage = 'An unknown error occurred!';
