@@ -17,7 +17,7 @@ export class NewsPublicComponent implements OnInit {
   public newsSearch_sort_by: string;
   public news_search_by: string;
   public news_value_search: string;
-  private newsSearch_total: string;
+  private newsSearch_total: number;
 
   constructor(private newsService: NewsService, private router: Router) {
   }
